@@ -215,3 +215,246 @@
   display: block;
   margin-top: $spacing-xs;
 }
+
+.trackingCard {
+  background-color: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  box-shadow: $shadow-card;
+  margin-bottom: $spacing-lg;
+  border: 2rpx solid rgba($color-pending, 0.12);
+}
+
+.trackingHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $spacing-md;
+  padding-bottom: $spacing-md;
+  border-bottom: 2rpx dashed $color-divider;
+}
+
+.trackingTitle {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+.trackingBadgeOverdue {
+  display: inline-block;
+  margin-left: $spacing-sm;
+  padding: 4rpx 12rpx;
+  border-radius: $radius-round;
+  background-color: rgba($color-unqualified, 0.12);
+  color: $color-unqualified;
+  font-size: 20rpx;
+  font-weight: $font-weight-medium;
+}
+
+.trackingBadgeUrgent {
+  display: inline-block;
+  margin-left: $spacing-sm;
+  padding: 4rpx 12rpx;
+  border-radius: $radius-round;
+  background-color: rgba($color-pending, 0.12);
+  color: $color-pending;
+  font-size: 20rpx;
+  font-weight: $font-weight-medium;
+}
+
+.trackingToggle {
+  font-size: $font-size-xs;
+  color: $color-primary;
+  font-weight: $font-weight-medium;
+}
+
+.trackingList {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+}
+
+.trackingItem {
+  background-color: $color-bg-page;
+  border-radius: $radius-md;
+  padding: $spacing-md;
+  border-left: 6rpx solid $color-primary;
+  transition: all $transition-base;
+}
+
+.trackingItemOverdue {
+  border-left-color: $color-unqualified;
+  background-color: rgba($color-unqualified, 0.04);
+}
+
+.trackingItemUrgent {
+  border-left-color: $color-pending;
+  background-color: rgba($color-pending, 0.04);
+}
+
+.trackingItemHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $spacing-xs;
+}
+
+.trackingItemSection {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  flex: 1;
+  min-width: 0;
+  @include text-ellipsis;
+}
+
+.trackingItemStatus {
+  padding: 4rpx 12rpx;
+  border-radius: $radius-round;
+  font-size: 20rpx;
+  font-weight: $font-weight-medium;
+  background-color: rgba($color-primary, 0.1);
+  color: $color-primary;
+}
+
+.trackingStatusOverdue {
+  background-color: rgba($color-unqualified, 0.14);
+  color: $color-unqualified;
+}
+
+.trackingStatusUrgent {
+  background-color: rgba($color-pending, 0.14);
+  color: $color-pending;
+}
+
+.trackingItemMeta {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  margin-bottom: $spacing-xs;
+}
+
+.trackingItemMetaLabel {
+  font-size: $font-size-xs;
+  font-weight: $font-weight-semibold;
+  color: $color-text-secondary;
+  background-color: rgba($color-primary, 0.08);
+  padding: 4rpx 12rpx;
+  border-radius: $radius-sm;
+}
+
+.trackingItemMetaText {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  flex: 1;
+  min-width: 0;
+  @include text-ellipsis;
+}
+
+.trackingItemData {
+  display: flex;
+  gap: $spacing-sm;
+  margin-bottom: $spacing-xs;
+}
+
+.trackingItemDataBox {
+  flex: 1;
+  text-align: center;
+  background-color: $color-bg-card;
+  padding: $spacing-xs;
+  border-radius: $radius-sm;
+}
+
+.trackingItemDataLabel {
+  display: block;
+  font-size: 20rpx;
+  color: $color-text-tertiary;
+  margin-bottom: 4rpx;
+}
+
+.trackingItemDataValue {
+  display: block;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+.trackingItemDataOriginal {
+  color: $color-unqualified;
+}
+
+.trackingItemDataOverdue {
+  color: $color-unqualified;
+}
+
+.trackingItemPhotos {
+  margin-bottom: $spacing-xs;
+}
+
+.trackingItemPhotosLabel {
+  font-size: 20rpx;
+  color: $color-text-tertiary;
+  margin-right: $spacing-xs;
+}
+
+.trackingItemPhotoGrid {
+  display: inline-flex;
+  align-items: center;
+  gap: $spacing-xs;
+  vertical-align: middle;
+}
+
+.trackingItemPhoto {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: $radius-sm;
+  background-color: $color-divider;
+}
+
+.trackingItemPhotosEmpty {
+  font-size: 20rpx;
+  color: $color-text-tertiary;
+}
+
+.trackingItemOpinion {
+  background-color: $color-bg-card;
+  border-radius: $radius-sm;
+  padding: $spacing-xs $spacing-sm;
+  margin-bottom: $spacing-sm;
+}
+
+.trackingItemOpinionLabel {
+  font-size: 20rpx;
+  color: $color-text-tertiary;
+}
+
+.trackingItemOpinionText {
+  font-size: $font-size-xs;
+  color: $color-text-secondary;
+  line-height: $line-height-normal;
+}
+
+.trackingItemActions {
+  display: flex;
+  gap: $spacing-sm;
+}
+
+.trackingBtn {
+  @include button-reset;
+  flex: 1;
+  height: $button-height-sm;
+  border-radius: $radius-button;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  transition: all $transition-base;
+
+  &:active {
+    opacity: 0.9;
+    transform: scale(0.98);
+  }
+}
+
+.trackingBtnPrimary {
+  background: linear-gradient(135deg, $color-pending 0%, #FBBF24 100%);
+  color: $color-text-white;
+}

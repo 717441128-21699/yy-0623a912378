@@ -302,15 +302,149 @@
   border: 2rpx solid rgba($color-primary, 0.08);
 }
 
+.archiveHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $spacing-md;
+  padding-bottom: $spacing-md;
+  border-bottom: 2rpx dashed $color-divider;
+}
+
 .archiveTitle {
   display: flex;
   align-items: center;
   font-size: $font-size-md;
   font-weight: $font-weight-semibold;
   color: $color-text-primary;
+}
+
+.archiveToggle {
+  font-size: $font-size-xs;
+  color: $color-primary;
+  font-weight: $font-weight-medium;
+}
+
+.monthSummaryCard {
+  background-color: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  box-shadow: $shadow-card;
+  margin-bottom: $spacing-lg;
+  border: 2rpx solid rgba($color-primary, 0.12);
+}
+
+.monthSummaryHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   margin-bottom: $spacing-md;
-  padding-bottom: $spacing-md;
-  border-bottom: 2rpx dashed $color-divider;
+}
+
+.monthSummaryTitle {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+.monthPickerBtn {
+  padding: 8rpx 16rpx;
+  background-color: rgba($color-primary, 0.08);
+  border-radius: $radius-sm;
+}
+
+.monthPickerText {
+  font-size: $font-size-xs;
+  color: $color-primary;
+  font-weight: $font-weight-medium;
+}
+
+.monthStatGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: $spacing-xs;
+}
+
+.monthStatItem {
+  border-radius: $radius-sm;
+  padding: $spacing-sm $spacing-xs;
+  text-align: center;
+  transition: all $transition-base;
+
+  &:active {
+    opacity: 0.85;
+    transform: scale(0.97);
+  }
+}
+
+.monthStatNum {
+  display: block;
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+  line-height: 1.2;
+}
+
+.monthStatLabel {
+  display: block;
+  font-size: 20rpx;
+  margin-top: 4rpx;
+  color: rgba(#fff, 0.9);
+}
+
+.monthStatItemTotal {
+  background: linear-gradient(135deg, #6366F1 0%, #818CF8 100%);
+  .monthStatNum, .monthStatLabel { color: #fff; }
+}
+
+.monthStatItemDeviation {
+  background: linear-gradient(135deg, #EF4444 0%, #F87171 100%);
+  .monthStatNum, .monthStatLabel { color: #fff; }
+}
+
+.monthStatItemRectify {
+  background: linear-gradient(135deg, #10B981 0%, #34D399 100%);
+  .monthStatNum, .monthStatLabel { color: #fff; }
+}
+
+.monthStatItemPendingRetest {
+  background: linear-gradient(135deg, #F59E0B 0%, #FBBF24 100%);
+  .monthStatNum, .monthStatLabel { color: #fff; }
+}
+
+.monthStatItemPendingSign {
+  background: linear-gradient(135deg, #8B5CF6 0%, #A78BFA 100%);
+  .monthStatNum, .monthStatLabel { color: #fff; }
+}
+
+.monthStatItemApproved {
+  background: linear-gradient(135deg, #059669 0%, #10B981 100%);
+  .monthStatNum, .monthStatLabel { color: #fff; }
+}
+
+.monthStatItemRejected {
+  background: linear-gradient(135deg, #DC2626 0%, #EF4444 100%);
+  .monthStatNum, .monthStatLabel { color: #fff; }
+}
+
+.monthStatItemObserving {
+  background: linear-gradient(135deg, #4F46E5 0%, #6366F1 100%);
+  .monthStatNum, .monthStatLabel { color: #fff; }
+}
+
+.monthEmpty {
+  padding: $spacing-lg 0;
+  text-align: center;
+}
+
+.monthEmptyText {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+}
+
+.pickerArrow {
+  font-size: 20rpx;
+  color: $color-text-tertiary;
+  margin-left: $spacing-xs;
 }
 
 .archiveIcon {

@@ -224,6 +224,19 @@ const SignoffDetailPage: React.FC = () => {
     });
   };
 
+  const handleToggleDigest = (idx: number) => {
+    setSelectedDigestIdx(prev => (prev === idx ? null : idx));
+  };
+
+  const handleExpandAllDigests = () => {
+    if (!task || task.points.length === 0) return;
+    if (selectedDigestIdx === task.points.length - 1) {
+      setSelectedDigestIdx(null);
+    } else {
+      setSelectedDigestIdx(task.points.length - 1);
+    }
+  };
+
   const handleSign = (result: 'approved' | 'rejected' | 'observing') => {
     const resultLabel = result === 'approved' ? '通过' : result === 'rejected' ? '退回' : '继续观察';
     Taro.showModal({
@@ -375,7 +388,7 @@ const SignoffDetailPage: React.FC = () => {
                   <View key={point.id} className={styles.reportItem}>
                     <View
                       className={styles.reportItemHead}
-                      onClick={() => setSelectedDigestIdx(isOpen ? null : index)}
+                      onClick={() => handleToggleDigest(index)}
                     >
                       <View style={{ display: 'flex', alignItems: 'center', minWidth: 0, flex: 1 }}>
                         <Text className={styles.reportItemIndex}>{index + 1}</Text>
@@ -388,67 +401,69 @@ const SignoffDetailPage: React.FC = () => {
                         styles.reportItemTag,
                         point.isDeviation ? styles.reportItemTagFail : styles.reportItemTagPass,
                       )}>
-                        {point.isDeviation ? '偏差' : '合格'}
+                        {isOpen ? '🔼收起' : point.isDeviation ? '🔽偏差' : '🔽合格'}
                       </Text>
                     </View>
 
-                    <View className={styles.reportItemDataRow}>
-                      <View className={styles.reportItemData}>
-                        <Text className={styles.reportItemDataLabel}>标准值</Text>
-                        <Text className={styles.reportItemDataValue}>≤{point.standardValue}</Text>
-                      </View>
-                      <View className={styles.reportItemData}>
-                        <Text className={styles.reportItemDataLabel}>实测值</Text>
-                        <Text className={classnames(
-                          styles.reportItemDataValue,
-                          point.isDeviation && styles.reportItemDataValueOriginal,
-                        )}>{point.measuredValue}</Text>
-                      </View>
-                      {point.isDeviation && point.retestValue && (
-                        <View className={styles.reportItemData}>
-                          <Text className={styles.reportItemDataLabel}>复测值</Text>
-                          <Text className={classnames(styles.reportItemDataValue, styles.reportItemDataValueRetest)}>
-                            {point.retestValue}
-                          </Text>
-                        </View>
-                      )}
-                    </View>
-
-                    <View className={styles.reportItemPhotos}>
-                      <View className={styles.reportItemPhotoTag}>
-                        <Text className={styles.reportItemPhotoTagLabel}>原始照片</Text>
-                        <Text className={styles.reportItemPhotoTagValue}>{point.photos?.length || 0}张</Text>
-                      </View>
-                      {point.isDeviation && (
-                        <View className={styles.reportItemPhotoTag}>
-                          <Text className={styles.reportItemPhotoTagLabel}>复测照片</Text>
-                          <Text className={styles.reportItemPhotoTagValue}>{point.retestPhotos?.length || 0}张</Text>
-                        </View>
-                      )}
-                    </View>
-
-                    {point.isDeviation && point.rectificationOpinion && (
-                      <View className={styles.reportItemOpinion}>
-                        <Text className={styles.reportItemOpinionLabel}>整改意见：</Text>
-                        <Text className={styles.reportItemOpinionText}>{point.rectificationOpinion}</Text>
-                        {point.rectificationDeadline && (
-                          <Text className={styles.reportItemOpinionText} style={{ marginTop: 4 }}>
-                            整改期限：{point.rectificationDeadline}
-                            {point.retestInspector ? ` · 复测人：${point.retestInspector}` : ''}
-                          </Text>
-                        )}
-                      </View>
-                    )}
-
                     {isOpen && (
-                      <View className={styles.reportItemActions}>
-                        <Button
-                          className={styles.reportItemCopyBtn}
-                          onClick={(e) => { e.stopPropagation && e.stopPropagation(); handleCopySinglePoint(index); }}
-                        >
-                          📋 复制点位{index + 1}留档摘要
-                        </Button>
-                      </View>
+                      <>
+                        <View className={styles.reportItemDataRow}>
+                          <View className={styles.reportItemData}>
+                            <Text className={styles.reportItemDataLabel}>标准值</Text>
+                            <Text className={styles.reportItemDataValue}>≤{point.standardValue}</Text>
+                          </View>
+                          <View className={styles.reportItemData}>
+                            <Text className={styles.reportItemDataLabel}>实测值</Text>
+                            <Text className={classnames(
+                              styles.reportItemDataValue,
+                              point.isDeviation && styles.reportItemDataValueOriginal,
+                            )}>{point.measuredValue}</Text>
+                          </View>
+                          {point.isDeviation && point.retestValue && (
+                            <View className={styles.reportItemData}>
+                              <Text className={styles.reportItemDataLabel}>复测值</Text>
+                              <Text className={classnames(styles.reportItemDataValue, styles.reportItemDataValueRetest)}>
+                                {point.retestValue}
+                              </Text>
+                            </View>
+                          )}
+                        </View>
+
+                        <View className={styles.reportItemPhotos}>
+                          <View className={styles.reportItemPhotoTag}>
+                            <Text className={styles.reportItemPhotoTagLabel}>原始照片</Text>
+                            <Text className={styles.reportItemPhotoTagValue}>{point.photos?.length || 0}张</Text>
+                          </View>
+                          {point.isDeviation && (
+                            <View className={styles.reportItemPhotoTag}>
+                              <Text className={styles.reportItemPhotoTagLabel}>复测照片</Text>
+                              <Text className={styles.reportItemPhotoTagValue}>{point.retestPhotos?.length || 0}张</Text>
+                            </View>
+                          )}
+                        </View>
+
+                        {point.isDeviation && point.rectificationOpinion && (
+                          <View className={styles.reportItemOpinion}>
+                            <Text className={styles.reportItemOpinionLabel}>整改意见：</Text>
+                            <Text className={styles.reportItemOpinionText}>{point.rectificationOpinion}</Text>
+                            {point.rectificationDeadline && (
+                              <Text className={styles.reportItemOpinionText} style={{ marginTop: 4 }}>
+                                整改期限：{point.rectificationDeadline}
+                                {point.retestInspector ? ` · 复测人：${point.retestInspector}` : ''}
+                              </Text>
+                            )}
+                          </View>
+                        )}
+
+                        <View className={styles.reportItemActions}>
+                          <Button
+                            className={styles.reportItemCopyBtn}
+                            onClick={(e) => { e.stopPropagation && e.stopPropagation(); handleCopySinglePoint(index); }}
+                          >
+                            📋 复制点位{index + 1}留档摘要
+                          </Button>
+                        </View>
+                      </>
                     )}
                   </View>
                 );
@@ -497,9 +512,9 @@ const SignoffDetailPage: React.FC = () => {
               </Button>
               <Button
                 className={classnames(styles.reportActionBtn, styles.reportActionSecondary)}
-                onClick={() => setSelectedDigestIdx(selectedDigestIdx === -2 ? null : 0)}
+                onClick={handleExpandAllDigests}
               >
-                🔽 展开/收起点位摘要
+                {selectedDigestIdx !== null ? '🔼 收起点位摘要' : '🔽 展开点位摘要'}
               </Button>
             </View>
           </View>
