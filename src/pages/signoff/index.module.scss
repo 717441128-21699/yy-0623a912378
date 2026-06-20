@@ -292,3 +292,132 @@
   line-height: $line-height-normal;
   @include text-ellipsis-multi(2);
 }
+
+.archiveCard {
+  background-color: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  box-shadow: $shadow-card;
+  margin-bottom: $spacing-lg;
+  border: 2rpx solid rgba($color-primary, 0.08);
+}
+
+.archiveTitle {
+  display: flex;
+  align-items: center;
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  margin-bottom: $spacing-md;
+  padding-bottom: $spacing-md;
+  border-bottom: 2rpx dashed $color-divider;
+}
+
+.archiveIcon {
+  margin-right: $spacing-sm;
+  font-size: $font-size-lg;
+}
+
+.archiveSubtitle {
+  display: block;
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  font-weight: $font-weight-medium;
+  margin-top: $spacing-md;
+  margin-bottom: $spacing-sm;
+}
+
+.archivePickerRow {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  margin-bottom: $spacing-xs;
+}
+
+.archivePicker {
+  flex: 1;
+  height: 72rpx;
+  background-color: $color-bg-page;
+  border-radius: $radius-sm;
+  border: 2rpx solid $color-border;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 $spacing-md;
+}
+
+.archivePickerValue {
+  font-size: $font-size-sm;
+  color: $color-text-primary;
+  font-weight: $font-weight-medium;
+  @include text-ellipsis;
+}
+
+.archiveFilterScroll {
+  white-space: nowrap;
+  @include scroll-x-container;
+}
+
+.archiveFilterBar {
+  display: inline-flex;
+  gap: $spacing-xs;
+  padding-right: $spacing-md;
+  @include scroll-x-container;
+}
+
+.archiveFilterItem {
+  @include scroll-x-item(200rpx);
+  padding: 12rpx 24rpx;
+  border-radius: $radius-button;
+  background-color: $color-bg-page;
+  color: $color-text-secondary;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  border: 2rpx solid transparent;
+  transition: all $transition-base;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.archiveFilterItemSmall {
+  @include scroll-x-item(180rpx);
+  padding: 10rpx 20rpx;
+  font-size: $font-size-xs;
+}
+
+.archiveFilterItemActive {
+  background-color: rgba($color-primary, 0.1);
+  color: $color-primary;
+  border-color: rgba($color-primary, 0.3);
+}
+
+.archiveFilterItemApprovedActive {
+  background-color: rgba($color-qualified, 0.1);
+  color: $color-qualified;
+  border-color: rgba($color-qualified, 0.3);
+}
+
+.archiveFilterItemRejectedActive {
+  background-color: rgba($color-unqualified, 0.1);
+  color: $color-unqualified;
+  border-color: rgba($color-unqualified, 0.3);
+}
+
+.archiveFilterItemObservingActive {
+  background-color: rgba($color-observing, 0.1);
+  color: $color-observing;
+  border-color: rgba($color-observing, 0.3);
+}
+
+.archiveResultHint {
+  display: block;
+  margin-top: $spacing-md;
+  padding-top: $spacing-sm;
+  border-top: 2rpx dashed $color-divider;
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  line-height: $line-height-normal;
+  @include text-ellipsis-multi(2);
+}

@@ -773,3 +773,172 @@
   color: $color-primary;
   border: 2rpx solid rgba($color-primary, 0.25);
 }
+
+.reportActionSupervisor {
+  background: linear-gradient(135deg, $color-rectifying 0%, darken($color-rectifying, 8%) 100%);
+  color: $color-text-white;
+}
+
+.reportActionSecondary {
+  background-color: $color-bg-page;
+  color: $color-text-secondary;
+  border: 2rpx solid $color-border;
+}
+
+.timelineContainer {
+  background-color: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg $spacing-lg $spacing-md;
+  box-shadow: $shadow-card;
+  margin-bottom: $spacing-lg;
+  position: relative;
+}
+
+.timelineItem {
+  display: flex;
+  position: relative;
+  padding-bottom: $spacing-md;
+  padding-left: $spacing-lg;
+
+  &:not(&-last)::before {
+    content: '';
+    position: absolute;
+    left: $spacing-lg;
+    top: 64rpx;
+    bottom: 0;
+    width: 2rpx;
+    background: linear-gradient(180deg, $color-primary 0%, rgba($color-primary, 0.2) 100%);
+    transform: translateX(-50%);
+  }
+
+  &-last {
+    padding-bottom: 0;
+  }
+}
+
+.timelineIcon {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 64rpx;
+  height: 64rpx;
+  border-radius: $radius-round;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba($color-primary, 0.1);
+  border: 2rpx solid rgba($color-primary, 0.2);
+  flex-shrink: 0;
+  z-index: 2;
+}
+
+.timelineIconText {
+  font-size: $font-size-md;
+}
+
+.timelineItemPrimary {
+  .timelineIcon {
+    background-color: rgba($color-primary, 0.1);
+    border-color: rgba($color-primary, 0.3);
+  }
+}
+
+.timelineItemInspecting {
+  .timelineIcon {
+    background-color: rgba($color-primary-light, 0.1);
+    border-color: rgba($color-primary-light, 0.3);
+  }
+}
+
+.timelineItemRectifying {
+  .timelineIcon {
+    background-color: rgba($color-rectifying, 0.1);
+    border-color: rgba($color-rectifying, 0.3);
+  }
+}
+
+.timelineItemPending {
+  .timelineIcon {
+    background-color: rgba($color-pending, 0.1);
+    border-color: rgba($color-pending, 0.3);
+  }
+}
+
+.timelineItemApproved {
+  .timelineIcon {
+    background-color: rgba($color-qualified, 0.1);
+    border-color: rgba($color-qualified, 0.3);
+  }
+}
+
+.timelineItemRejected {
+  .timelineIcon {
+    background-color: rgba($color-unqualified, 0.1);
+    border-color: rgba($color-unqualified, 0.3);
+  }
+}
+
+.timelineItemObserving {
+  .timelineIcon {
+    background-color: rgba($color-observing, 0.1);
+    border-color: rgba($color-observing, 0.3);
+  }
+}
+
+.timelineContent {
+  flex: 1;
+  background-color: $color-bg-page;
+  border-radius: $radius-sm;
+  padding: $spacing-sm $spacing-md;
+  margin-left: $spacing-md;
+}
+
+.timelineHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $spacing-xs;
+}
+
+.timelineLabel {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  line-height: 1.4;
+}
+
+.timelineDate {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  flex-shrink: 0;
+  margin-left: $spacing-sm;
+}
+
+.timelineDesc {
+  font-size: $font-size-xs;
+  color: $color-text-secondary;
+  line-height: $line-height-normal;
+}
+
+.reportItemActions {
+  margin-top: $spacing-sm;
+  padding-top: $spacing-sm;
+  border-top: 1rpx dashed $color-divider;
+}
+
+.reportItemCopyBtn {
+  @include button-reset;
+  height: 64rpx;
+  width: 100%;
+  border-radius: $radius-sm;
+  background: linear-gradient(135deg, rgba($color-primary, 0.08) 0%, rgba($color-primary, 0.04) 100%);
+  color: $color-primary;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-medium;
+  border: 2rpx dashed rgba($color-primary, 0.3);
+
+  &:active {
+    opacity: 0.9;
+    transform: scale(0.98);
+  }
+}

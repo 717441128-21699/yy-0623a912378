@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { View, Text, Button } from '@tarojs/components';
+import { View, Text, Button, Picker, ScrollView } from '@tarojs/components';
 import Taro from '@tarojs/taro';
 import classnames from 'classnames';
 import StatusTag from '@/components/StatusTag';
@@ -7,32 +7,65 @@ import { useInspectionStore } from '@/store/inspection';
 import type { TaskStatus } from '@/types/inspection';
 import styles from './index.module.scss';
 
-type FilterType = 'all' | 'pending_sign' | 'signed';
+type StatusFilter = 'all' | 'pending_sign' | 'signed';
+type SignFilter = 'all' | 'approved' | 'rejected' | 'observing';
+
+const ALL_ITEMS = '__all__';
 
 const SignoffPage: React.FC = () => {
-  const { tasks } = useInspectionStore();
-  const [filter, setFilter] = useState<FilterType>('all');
+  const { tasks, sections, checkCategories } = useInspectionStore();
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
+  const [signFilter, setSignFilter] = useState<SignFilter>('all');
+  const [sectionIndex, setSectionIndex] = useState(0);
+  const [checkItemFilter, setCheckItemFilter] = useState<string>(ALL_ITEMS);
 
-  const signTasks = useMemo(
+  const sectionNames = useMemo(
+    () => {
+      const names = sections.map(s => `${s.name} ${s.project}`);
+      return ['全部标段', ...names];
+    },
+    [sections]
+  );
+
+  const checkItemList = useMemo(() => {
+    const items: { id: string; name: string }[] = [];
+    checkCategories.forEach(cat => cat.items.forEach(i => items.push({ id: i.id, name: i.name })));
+    return items;
+  }, [checkCategories]);
+
+  const allSignTasks = useMemo(
     () => tasks.filter(t => t.status === 'pending_sign' || t.status === 'signed'),
     [tasks]
   );
 
   const filteredTasks = useMemo(() => {
-    if (filter === 'all') return signTasks;
-    return signTasks.filter(t => t.status === filter);
-  }, [signTasks, filter]);
+    let list = allSignTasks;
+    if (statusFilter !== 'all') {
+      list = list.filter(t => t.status === statusFilter);
+    }
+    if (signFilter !== 'all') {
+      list = list.filter(t => t.status === 'signed' && t.signResult === signFilter);
+    }
+    if (sectionIndex > 0) {
+      const target = sections[sectionIndex - 1];
+      if (target) {
+        list = list.filter(t =>
+          t.sectionName.includes(target.name) || t.sectionName.includes(target.project)
+        );
+      }
+    }
+    if (checkItemFilter !== ALL_ITEMS) {
+      list = list.filter(t => t.checkItemIds.includes(checkItemFilter));
+    }
+    return list.slice().sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+  }, [allSignTasks, statusFilter, signFilter, sectionIndex, checkItemFilter, sections]);
 
   const stats = useMemo(() => ({
-    pending: signTasks.filter(t => t.status === 'pending_sign').length,
-    approved: signTasks.filter(t => t.status === 'signed' && t.signResult === 'approved').length,
-    rejected: signTasks.filter(t => t.status === 'signed' && t.signResult === 'rejected').length,
-    observing: signTasks.filter(t => t.status === 'signed' && t.signResult === 'observing').length,
-  }), [signTasks]);
-
-  const getDeviationPoints = (task: typeof tasks[0]) => {
-    return task.points.filter(p => p.isDeviation);
-  };
+    pending: allSignTasks.filter(t => t.status === 'pending_sign').length,
+    approved: allSignTasks.filter(t => t.status === 'signed' && t.signResult === 'approved').length,
+    rejected: allSignTasks.filter(t => t.status === 'signed' && t.signResult === 'rejected').length,
+    observing: allSignTasks.filter(t => t.status === 'signed' && t.signResult === 'observing').length,
+  }), [allSignTasks]);
 
   const handleSignoff = (taskId: string) => {
     Taro.navigateTo({ url: `/pages/signoff-detail/index?taskId=${taskId}` });
@@ -52,9 +85,9 @@ const SignoffPage: React.FC = () => {
               key={item.key}
               className={classnames(
                 styles.filterBtn,
-                filter === item.key && styles.filterBtnActive
+                statusFilter === item.key && styles.filterBtnActive
               )}
-              onClick={() => setFilter(item.key)}
+              onClick={() => setStatusFilter(item.key)}
             >
               {item.label}
             </Button>
@@ -82,15 +115,117 @@ const SignoffPage: React.FC = () => {
           </View>
         </View>
 
+        <View className={styles.archiveCard}>
+          <Text className={styles.archiveTitle}>
+            <Text className={styles.archiveIcon}>🗂️</Text>
+            归档台账筛选
+          </Text>
+          <View className={styles.archivePickerRow}>
+            <Picker
+              mode="selector"
+              range={sectionNames}
+              value={sectionIndex}
+              onChange={e => setSectionIndex(Number(e.detail.value))}
+            >
+              <View className={styles.archivePicker}>
+                <Text className={styles.archivePickerValue}>{sectionNames[sectionIndex]}</Text>
+                <Text className={styles.pickerArrow}>▼</Text>
+              </View>
+            </Picker>
+          </View>
+          <Text className={styles.archiveSubtitle}>签认结果</Text>
+          <ScrollView scrollX className={styles.archiveFilterScroll}>
+            <View className={styles.archiveFilterBar}>
+              <Text
+                className={classnames(
+                  styles.archiveFilterItem,
+                  signFilter === 'all' && styles.archiveFilterItemActive,
+                )}
+                onClick={() => setSignFilter('all')}
+              >
+                全部
+              </Text>
+              <Text
+                className={classnames(
+                  styles.archiveFilterItem,
+                  styles.archiveFilterItemApproved,
+                  signFilter === 'approved' && styles.archiveFilterItemApprovedActive,
+                )}
+                onClick={() => setSignFilter('approved')}
+              >
+                ✅ 通过
+              </Text>
+              <Text
+                className={classnames(
+                  styles.archiveFilterItem,
+                  styles.archiveFilterItemRejected,
+                  signFilter === 'rejected' && styles.archiveFilterItemRejectedActive,
+                )}
+                onClick={() => setSignFilter('rejected')}
+              >
+                ❌ 退回
+              </Text>
+              <Text
+                className={classnames(
+                  styles.archiveFilterItem,
+                  styles.archiveFilterItemObserving,
+                  signFilter === 'observing' && styles.archiveFilterItemObservingActive,
+                )}
+                onClick={() => setSignFilter('observing')}
+              >
+                👁️ 观察
+              </Text>
+            </View>
+          </ScrollView>
+          <Text className={styles.archiveSubtitle}>检查项</Text>
+          <ScrollView scrollX className={styles.archiveFilterScroll}>
+            <View className={styles.archiveFilterBar}>
+              <Text
+                className={classnames(
+                  styles.archiveFilterItem,
+                  styles.archiveFilterItemSmall,
+                  checkItemFilter === ALL_ITEMS && styles.archiveFilterItemActive,
+                )}
+                onClick={() => setCheckItemFilter(ALL_ITEMS)}
+              >
+                全部
+              </Text>
+              {checkItemList.map(item => (
+                <Text
+                  key={item.id}
+                  className={classnames(
+                    styles.archiveFilterItem,
+                    styles.archiveFilterItemSmall,
+                    checkItemFilter === item.id && styles.archiveFilterItemActive,
+                  )}
+                  onClick={() => setCheckItemFilter(item.id)}
+                >
+                  {item.name}
+                </Text>
+              ))}
+            </View>
+          </ScrollView>
+          <Text className={styles.archiveResultHint}>
+            当前筛选结果：共 {filteredTasks.length} 条记录
+            {sectionIndex > 0 && ` · ${sectionNames[sectionIndex]}`}
+            {checkItemFilter !== ALL_ITEMS && (
+              ` · ${checkItemList.find(i => i.id === checkItemFilter)?.name || ''}`
+            )}
+            {signFilter !== 'all' && (
+              ` · ${signFilter === 'approved' ? '通过' : signFilter === 'rejected' ? '退回' : '观察'}`
+            )}
+          </Text>
+        </View>
+
         {filteredTasks.length === 0 && (
           <View className={styles.emptyState}>
             <Text className={styles.emptyIcon}>📝</Text>
-            <Text className={styles.emptyText}>暂无签认记录</Text>
+            <Text className={styles.emptyText}>暂无匹配的签认记录</Text>
           </View>
         )}
 
         {filteredTasks.map(task => {
-          const deviations = getDeviationPoints(task);
+          const deviations = task.points.filter(p => p.isDeviation);
           return (
             <View
               key={task.id}
@@ -175,7 +310,7 @@ const SignoffPage: React.FC = () => {
                     className={classnames(styles.actionBtn, styles.actionPrimary)}
                     onClick={() => handleSignoff(task.id)}
                   >
-                    查看详情
+                    查看详情与时间线
                   </Button>
                 )}
               </View>

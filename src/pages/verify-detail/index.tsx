@@ -49,7 +49,6 @@ const buildDefaultRectification = (
   return {
     opinion,
     deadline: formatDate(deadlineDate),
-    severity,
   };
 };
 
@@ -251,14 +250,14 @@ const VerifyDetailPage: React.FC = () => {
       return;
     }
     const hasDeviationWithoutOpinion = task.points.some(
-      p => p.isDeviation && !p.rectificationOpinion
+      p => p.isDeviation && !p.rectificationOpinion && !(opinions[p.id] && opinions[p.id].trim())
     );
     if (hasDeviationWithoutOpinion) {
       Taro.showToast({ title: '偏差点位需填写整改意见', icon: 'none' });
       return;
     }
-    submitTask(taskId);
-    Taro.showToast({ title: '提交成功', icon: 'success' });
+    submitTask(taskId, { opinions, deadlines });
+    Taro.showToast({ title: '提交成功，整改意见已同步保存', icon: 'success' });
     setTimeout(() => {
       Taro.switchTab({ url: '/pages/verify/index' });
     }, 1500);
@@ -290,6 +289,7 @@ const VerifyDetailPage: React.FC = () => {
           const hasMeasured = !!measuredValues[point.id];
           const isRetestNeeded = isRectifying && point.isDeviation && !point.retestValue;
           const currentRetestPhotos = retestPhotos[point.id] || [];
+          const currentOpinion = opinions[point.id] || point.rectificationOpinion || '';
 
           return (
             <View key={point.id} className={styles.pointCard}>
@@ -368,7 +368,7 @@ const VerifyDetailPage: React.FC = () => {
 
               {hasMeasured && isDeviation && !isRectifying && (
                 <View className={styles.deviationBox}>
-                  <Text className={styles.deviationTitle}>⚠️ 发现偏差 - 自动生成整改意见（可修改）</Text>
+                  <Text className={styles.deviationTitle}>⚠️ 发现偏差 - 自动生成整改意见（可修改，提交复核时自动保存）</Text>
                   <Input
                     className={styles.deviationInput}
                     placeholder="输入整改意见"
@@ -389,15 +389,15 @@ const VerifyDetailPage: React.FC = () => {
                     className={styles.saveRectifyBtn}
                     onClick={() => handleSaveRectification(point.id)}
                   >
-                    保存整改意见
+                    立即保存整改意见
                   </Button>
                 </View>
               )}
 
-              {point.rectificationOpinion && (
+              {currentOpinion && !(hasMeasured && isDeviation && !isRectifying) && (
                 <View className={styles.deviationBox}>
                   <Text className={styles.deviationTitle}>整改意见</Text>
-                  <Text className={styles.opinionText}>{point.rectificationOpinion}</Text>
+                  <Text className={styles.opinionText}>{currentOpinion}</Text>
                   {point.rectificationDeadline && (
                     <Text className={styles.deadlineText}>
                       整改期限：{point.rectificationDeadline}

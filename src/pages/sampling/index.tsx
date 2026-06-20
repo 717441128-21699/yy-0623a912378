@@ -63,7 +63,6 @@ const SamplingPage: React.FC = () => {
 
   const historyStats = useMemo(() => {
     if (!historySection) return { rectifying: 0, pending: 0, approved: 0, rejected: 0, observing: 0, total: 0 };
-    const key = `${historySection.id} ${historySection.project}`;
     const sectionTasks = tasks.filter(t => t.sectionName.includes(historySection.id) || t.sectionName.includes(historySection.name));
     const filtered = historyFilterItemId === ALL_FILTER
       ? sectionTasks
@@ -81,7 +80,6 @@ const SamplingPage: React.FC = () => {
 
   const historyTaskList = useMemo(() => {
     if (!historySection) return [];
-    const key = `${historySection.id} ${historySection.project}`;
     const sectionTasks = tasks.filter(
       t => t.sectionName.includes(historySection.name) || t.sectionName.includes(historySection.project)
     );

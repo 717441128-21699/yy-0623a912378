@@ -54,7 +54,13 @@ interface InspectionStore {
 
   createTask: (sectionId: string, sectionName: string, checkItemIds: string[]) => string;
   updatePoint: (taskId: string, pointId: string, data: Partial<InspectionPoint>) => void;
-  submitTask: (taskId: string) => void;
+  submitTask: (
+    taskId: string,
+    extra?: {
+      opinions?: Record<string, string>;
+      deadlines?: Record<string, string>;
+    }
+  ) => void;
   submitRetest: (taskId: string, pointId: string, retestValue: string, retestPhotos: string[], retestInspector: string) => void;
   signOff: (taskId: string, result: 'approved' | 'rejected' | 'observing', comment: string) => void;
   revertForReRectify: (taskId: string) => void;
@@ -141,7 +147,7 @@ export const useInspectionStore = create<InspectionStore>((set, get) => ({
     });
   },
 
-  submitTask: (taskId) => {
+  submitTask: (taskId, extra) => {
     set(state => {
       const nextTasks = state.tasks.map(task => {
         if (task.id !== taskId) return task;
@@ -152,7 +158,22 @@ export const useInspectionStore = create<InspectionStore>((set, get) => ({
         if (hasRectificationPending) {
           newStatus = 'rectifying';
         }
-        return { ...task, status: newStatus };
+        const mergedPoints = task.points.map(point => {
+          const opinionFromState = extra?.opinions?.[point.id];
+          const deadlineFromState = extra?.deadlines?.[point.id];
+          return {
+            ...point,
+            rectificationOpinion:
+              opinionFromState && opinionFromState.trim()
+                ? opinionFromState
+                : point.rectificationOpinion,
+            rectificationDeadline:
+              deadlineFromState && deadlineFromState.trim()
+                ? deadlineFromState
+                : point.rectificationDeadline,
+          };
+        });
+        return { ...task, points: mergedPoints, status: newStatus };
       });
       persistTasks(nextTasks);
       return { tasks: nextTasks };
