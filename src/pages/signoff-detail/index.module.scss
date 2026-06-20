@@ -3,7 +3,7 @@
 .container {
   min-height: 100vh;
   background-color: $color-bg-page;
-  padding-bottom: 200rpx;
+  padding-bottom: 80rpx;
 }
 
 .taskInfo {
@@ -148,31 +148,95 @@
 
 .photoCompare {
   display: flex;
+  flex-direction: column;
   gap: $spacing-md;
   margin-bottom: $spacing-md;
-}
-
-.photoCompareItem {
-  flex: 1;
-}
-
-.photoCompareLabel {
-  display: block;
-  font-size: $font-size-xs;
-  color: $color-text-tertiary;
-  margin-bottom: $spacing-xs;
-  text-align: center;
-}
-
-.photoCompareBox {
-  height: 200rpx;
+  padding: $spacing-md;
   background-color: $color-bg-page;
   border-radius: $radius-sm;
-  @include flex-center;
-  border: 2rpx solid $color-border;
 }
 
-.photoCompareText {
+.photoCompareDouble {
+  background-color: rgba($color-observing, 0.06);
+}
+
+.photoCompareSingle {
+  background-color: $color-bg-page;
+}
+
+.photoColumn {
+  flex: 1;
+  min-width: 0;
+}
+
+.photoColumnLabel {
+  display: block;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  color: $color-text-secondary;
+  margin-bottom: $spacing-sm;
+}
+
+.photoScroll {
+  width: 100%;
+  @include scroll-x-container;
+}
+
+.photoScrollInner {
+  @include scroll-x-container;
+  padding-right: $spacing-lg;
+}
+
+.photoTile {
+  @include scroll-x-item(160rpx);
+  margin-right: $spacing-sm;
+  width: 160rpx;
+  height: 160rpx;
+  border-radius: $radius-sm;
+  overflow: hidden;
+  position: relative;
+  border: 2rpx solid $color-border;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: $color-bg-card;
+
+  &:active {
+    opacity: 0.9;
+  }
+}
+
+.photoTileImg {
+  width: 100%;
+  height: 100%;
+}
+
+.photoTileBadge {
+  position: absolute;
+  right: 4rpx;
+  top: 4rpx;
+  width: 32rpx;
+  height: 32rpx;
+  border-radius: $radius-round;
+  background-color: rgba(0, 0, 0, 0.55);
+  @include flex-center;
+}
+
+.photoTileBadgeText {
+  color: $color-text-white;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-medium;
+}
+
+.photoEmptyBox {
+  height: 120rpx;
+  border-radius: $radius-sm;
+  background-color: $color-bg-card;
+  border: 2rpx dashed $color-border;
+  @include flex-center;
+}
+
+.photoEmptyText {
   font-size: $font-size-sm;
   color: $color-text-disabled;
 }
@@ -292,16 +356,19 @@
 
 .signedResult {
   text-align: center;
-  padding: $spacing-xl;
+  padding: $spacing-xl $spacing-lg;
+  background: linear-gradient(180deg, rgba($color-primary, 0.04) 0%, transparent 100%);
+  border-radius: $radius-md;
 }
 
 .signedIcon {
   font-size: 80rpx;
-  margin-bottom: $spacing-lg;
+  margin-bottom: $spacing-md;
+  display: block;
 }
 
 .signedText {
-  font-size: $font-size-lg;
+  font-size: $font-size-xl;
   font-weight: $font-weight-semibold;
   display: block;
   margin-bottom: $spacing-sm;
@@ -325,14 +392,73 @@
   display: block;
 }
 
-.bottomBar {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  padding: $spacing-lg $page-padding;
-  padding-bottom: calc(#{$spacing-lg} + env(safe-area-inset-bottom));
+.commentBox {
+  margin-top: $spacing-lg;
+  text-align: left;
+  padding: $spacing-md;
+  background-color: $color-bg-page;
+  border-radius: $radius-sm;
+  border-left: 4rpx solid $color-primary;
+}
+
+.commentBoxLabel {
+  display: block;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  color: $color-primary;
+  margin-bottom: $spacing-xs;
+}
+
+.commentBoxText {
+  display: block;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  line-height: $line-height-normal;
+}
+
+.signHint {
+  margin-top: $spacing-lg;
+  padding: $spacing-md;
+  border-radius: $radius-sm;
+  background-color: rgba($color-info, 0.06);
+  border-left: 4rpx solid $color-info;
+}
+
+.signHintText {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  line-height: $line-height-normal;
+}
+
+.trackButtons {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+  margin-top: $spacing-lg;
+}
+
+.trackBtn {
+  @include button-reset;
+  width: 100%;
+  height: $button-height-sm;
+  border-radius: $radius-button;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  transition: all $transition-base;
+
+  &:active {
+    opacity: 0.9;
+    transform: scale(0.98);
+  }
+}
+
+.trackBtnPrimary {
+  background: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);
+  color: $color-text-white;
+}
+
+.trackBtnSecondary {
   background-color: $color-bg-card;
-  box-shadow: 0 -2rpx 12rpx rgba(0, 0, 0, 0.06);
-  z-index: 100;
+  color: $color-text-secondary;
+  border: 2rpx solid $color-border;
 }

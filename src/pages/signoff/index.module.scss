@@ -224,3 +224,71 @@
   font-size: $font-size-md;
   color: $color-text-tertiary;
 }
+
+.signInfoCard {
+  margin-top: $spacing-md;
+  padding: $spacing-md;
+  border-radius: $radius-sm;
+  background: linear-gradient(180deg, rgba($color-primary, 0.04) 0%, rgba($color-primary, 0.01) 100%);
+  border-left: 4rpx solid $color-primary;
+}
+
+.signInfoRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $spacing-xs;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.signInfoLabel {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+}
+
+.signInfoValue {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+}
+
+.signInfoApproved {
+  color: $color-qualified;
+}
+
+.signInfoRejected {
+  color: $color-unqualified;
+}
+
+.signInfoObserving {
+  color: $color-observing;
+}
+
+.signInfoValuePlain {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  font-weight: $font-weight-medium;
+}
+
+.signInfoComment {
+  margin-top: $spacing-sm;
+  padding-top: $spacing-sm;
+  border-top: 1rpx dashed rgba($color-border, 0.8);
+}
+
+.signInfoCommentLabel {
+  display: block;
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  margin-bottom: $spacing-xs;
+}
+
+.signInfoCommentText {
+  display: block;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  line-height: $line-height-normal;
+  @include text-ellipsis-multi(2);
+}

@@ -1,6 +1,51 @@
 import { create } from 'zustand';
+import Taro from '@tarojs/taro';
 import type { Section, CheckCategory, SamplingTask, InspectionPoint, TaskStatus } from '@/types/inspection';
 import { mockSections, mockCheckCategories, mockTasks, generateRandomLocations } from '@/data/mock';
+
+const STORAGE_KEY_TASKS = 'inspection_tasks_v1';
+const STORAGE_KEY_COUNTERS = 'inspection_counters_v1';
+
+function loadPersistedTasks(): SamplingTask[] {
+  try {
+    const raw = Taro.getStorageSync(STORAGE_KEY_TASKS);
+    if (raw && Array.isArray(raw) && raw.length > 0) {
+      console.info('[Store] Load persisted tasks count:', raw.length);
+      return raw;
+    }
+  } catch (e) {
+    console.error('[Store] loadTasks error:', e);
+  }
+  return mockTasks;
+}
+
+function loadPersistedCounters() {
+  try {
+    const raw = Taro.getStorageSync(STORAGE_KEY_COUNTERS);
+    if (raw && typeof raw === 'object') {
+      return { taskIdCounter: raw.taskIdCounter || 100, pointIdCounter: raw.pointIdCounter || 200 };
+    }
+  } catch (e) {
+    console.error('[Store] loadCounters error:', e);
+  }
+  return { taskIdCounter: 100, pointIdCounter: 200 };
+}
+
+function persistTasks(tasks: SamplingTask[]) {
+  try {
+    Taro.setStorageSync(STORAGE_KEY_TASKS, tasks);
+  } catch (e) {
+    console.error('[Store] persistTasks error:', e);
+  }
+}
+
+function persistCounters(taskIdCounter: number, pointIdCounter: number) {
+  try {
+    Taro.setStorageSync(STORAGE_KEY_COUNTERS, { taskIdCounter, pointIdCounter });
+  } catch (e) {
+    console.error('[Store] persistCounters error:', e);
+  }
+}
 
 interface InspectionStore {
   sections: Section[];
@@ -12,17 +57,19 @@ interface InspectionStore {
   submitTask: (taskId: string) => void;
   submitRetest: (taskId: string, pointId: string, retestValue: string, retestPhotos: string[], retestInspector: string) => void;
   signOff: (taskId: string, result: 'approved' | 'rejected' | 'observing', comment: string) => void;
+  revertForReRectify: (taskId: string) => void;
   getTaskById: (taskId: string) => SamplingTask | undefined;
   getTasksByStatus: (status: TaskStatus) => SamplingTask[];
 }
 
-let taskIdCounter = 100;
-let pointIdCounter = 200;
+const initialCounters = loadPersistedCounters();
+let taskIdCounter = initialCounters.taskIdCounter;
+let pointIdCounter = initialCounters.pointIdCounter;
 
 export const useInspectionStore = create<InspectionStore>((set, get) => ({
   sections: mockSections,
   checkCategories: mockCheckCategories,
-  tasks: mockTasks,
+  tasks: loadPersistedTasks(),
 
   createTask: (sectionId, sectionName, checkItemIds) => {
     const newTaskId = `t${++taskIdCounter}`;
@@ -68,13 +115,18 @@ export const useInspectionStore = create<InspectionStore>((set, get) => ({
       signComment: '',
     };
 
-    set(state => ({ tasks: [newTask, ...state.tasks] }));
+    set(state => {
+      const nextTasks = [newTask, ...state.tasks];
+      persistTasks(nextTasks);
+      persistCounters(taskIdCounter, pointIdCounter);
+      return { tasks: nextTasks };
+    });
     return newTaskId;
   },
 
   updatePoint: (taskId, pointId, data) => {
-    set(state => ({
-      tasks: state.tasks.map(task =>
+    set(state => {
+      const nextTasks = state.tasks.map(task =>
         task.id === taskId
           ? {
               ...task,
@@ -83,15 +135,16 @@ export const useInspectionStore = create<InspectionStore>((set, get) => ({
               ),
             }
           : task
-      ),
-    }));
+      );
+      persistTasks(nextTasks);
+      return { tasks: nextTasks };
+    });
   },
 
   submitTask: (taskId) => {
-    set(state => ({
-      tasks: state.tasks.map(task => {
+    set(state => {
+      const nextTasks = state.tasks.map(task => {
         if (task.id !== taskId) return task;
-        const hasDeviation = task.points.some(p => p.isDeviation);
         const hasRectificationPending = task.points.some(
           p => p.isDeviation && !p.retestValue
         );
@@ -100,13 +153,15 @@ export const useInspectionStore = create<InspectionStore>((set, get) => ({
           newStatus = 'rectifying';
         }
         return { ...task, status: newStatus };
-      }),
-    }));
+      });
+      persistTasks(nextTasks);
+      return { tasks: nextTasks };
+    });
   },
 
   submitRetest: (taskId, pointId, retestValue, retestPhotos, retestInspector) => {
-    set(state => ({
-      tasks: state.tasks.map(task => {
+    set(state => {
+      const nextTasks = state.tasks.map(task => {
         if (task.id !== taskId) return task;
         const updatedPoints = task.points.map(point =>
           point.id === pointId
@@ -124,13 +179,15 @@ export const useInspectionStore = create<InspectionStore>((set, get) => ({
           .every(p => p.retestValue);
         const newStatus: TaskStatus = allRetested ? 'pending_sign' : 'rectifying';
         return { ...task, points: updatedPoints, status: newStatus };
-      }),
-    }));
+      });
+      persistTasks(nextTasks);
+      return { tasks: nextTasks };
+    });
   },
 
   signOff: (taskId, result, comment) => {
-    set(state => ({
-      tasks: state.tasks.map(task =>
+    set(state => {
+      const nextTasks = state.tasks.map(task =>
         task.id === taskId
           ? {
               ...task,
@@ -140,8 +197,29 @@ export const useInspectionStore = create<InspectionStore>((set, get) => ({
               signComment: comment,
             }
           : task
-      ),
-    }));
+      );
+      persistTasks(nextTasks);
+      return { tasks: nextTasks };
+    });
+  },
+
+  revertForReRectify: (taskId) => {
+    set(state => {
+      const nextTasks = state.tasks.map(task => {
+        if (task.id !== taskId) return task;
+        return {
+          ...task,
+          status: 'rectifying' as TaskStatus,
+          points: task.points.map(p =>
+            p.isDeviation
+              ? { ...p, retestValue: '', retestPhotos: [], retestDate: '', retestInspector: '' }
+              : p
+          ),
+        };
+      });
+      persistTasks(nextTasks);
+      return { tasks: nextTasks };
+    });
   },
 
   getTaskById: (taskId) => {

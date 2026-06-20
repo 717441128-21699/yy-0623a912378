@@ -135,11 +135,30 @@ const SignoffPage: React.FC = () => {
                   </View>
                 )}
                 {task.status === 'signed' && (
-                  <View className={styles.recordInfo}>
-                    <Text className={styles.recordInfoLabel}>签认结果</Text>
-                    <Text className={styles.recordInfoValue}>
-                      {task.signResult === 'approved' ? '通过' : task.signResult === 'rejected' ? '退回' : '继续观察'}
-                    </Text>
+                  <View className={styles.signInfoCard}>
+                    <View className={styles.signInfoRow}>
+                      <Text className={styles.signInfoLabel}>签认结果</Text>
+                      <Text className={classnames(
+                        styles.signInfoValue,
+                        task.signResult === 'approved' && styles.signInfoApproved,
+                        task.signResult === 'rejected' && styles.signInfoRejected,
+                        task.signResult === 'observing' && styles.signInfoObserving,
+                      )}>
+                        {task.signResult === 'approved' ? '✅ 通过' : task.signResult === 'rejected' ? '❌ 退回' : '👁️ 继续观察'}
+                      </Text>
+                    </View>
+                    {task.signDate && (
+                      <View className={styles.signInfoRow}>
+                        <Text className={styles.signInfoLabel}>签认日期</Text>
+                        <Text className={styles.signInfoValuePlain}>{task.signDate}</Text>
+                      </View>
+                    )}
+                    {task.signComment && (
+                      <View className={styles.signInfoComment}>
+                        <Text className={styles.signInfoCommentLabel}>签认意见</Text>
+                        <Text className={styles.signInfoCommentText}>{task.signComment}</Text>
+                      </View>
+                    )}
                   </View>
                 )}
               </View>

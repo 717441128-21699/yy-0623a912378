@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { View, Text, Input, Button } from '@tarojs/components';
+import { View, Text, Input, Button, Image } from '@tarojs/components';
 import Taro, { useRouter } from '@tarojs/taro';
 import classnames from 'classnames';
 import { useInspectionStore } from '@/store/inspection';
@@ -47,6 +47,12 @@ const VerifyDetailPage: React.FC = () => {
     return vals;
   });
 
+  const [retestPhotos, setRetestPhotos] = useState<Record<string, string[]>>(() => {
+    const vals: Record<string, string[]> = {};
+    task?.points.forEach(p => { vals[p.id] = [...(p.retestPhotos || [])]; });
+    return vals;
+  });
+
   const checkDeviation = useCallback((pointId: string, value: string) => {
     if (!task || !value) return false;
     const point = task.points.find(p => p.id === pointId);
@@ -79,6 +85,59 @@ const VerifyDetailPage: React.FC = () => {
     setDeadlines(prev => ({ ...prev, [pointId]: value }));
   };
 
+  const handleChooseImage = (pointId: string, isRetest: boolean) => {
+    Taro.chooseImage({
+      count: 9,
+      sizeType: ['original', 'compressed'],
+      sourceType: ['album', 'camera'],
+    }).then(res => {
+      const paths = res.tempFilePaths;
+      console.info('[Verify] Chose images:', paths);
+      if (isRetest) {
+        setRetestPhotos(prev => {
+          const next = { ...prev };
+          const existing = next[pointId] || [];
+          next[pointId] = [...existing, ...paths];
+          return next;
+        });
+      } else {
+        const targetPoint = task?.points.find(p => p.id === pointId);
+        if (targetPoint) {
+          updatePoint(taskId, pointId, {
+            photos: [...(targetPoint.photos || []), ...paths],
+          });
+        }
+      }
+      Taro.showToast({ title: '已添加照片', icon: 'success' });
+    }).catch(err => {
+      console.error('[Verify] chooseImage error:', err);
+    });
+  };
+
+  const handleRemoveImage = (pointId: string, index: number, isRetest: boolean) => {
+    if (isRetest) {
+      setRetestPhotos(prev => {
+        const next = { ...prev };
+        const existing = next[pointId] || [];
+        existing.splice(index, 1);
+        next[pointId] = existing;
+        return next;
+      });
+    } else {
+      const targetPoint = task?.points.find(p => p.id === pointId);
+      if (targetPoint) {
+        const newPhotos = [...targetPoint.photos];
+        newPhotos.splice(index, 1);
+        updatePoint(taskId, pointId, { photos: newPhotos });
+      }
+    }
+  };
+
+  const handlePreviewImage = (urls: string[], current: string) => {
+    if (!urls || urls.length === 0) return;
+    Taro.previewImage({ urls, current });
+  };
+
   const handleSaveRectification = (pointId: string) => {
     const opinion = opinions[pointId] || '';
     const deadline = deadlines[pointId] || '';
@@ -104,11 +163,12 @@ const VerifyDetailPage: React.FC = () => {
   const handleSubmitRetest = (pointId: string) => {
     const retestVal = retestValues[pointId] || '';
     const retestInspector = retestInspectors[pointId] || '';
+    const currentRetestPhotos = retestPhotos[pointId] || [];
     if (!retestVal) {
       Taro.showToast({ title: '请输入复测值', icon: 'none' });
       return;
     }
-    submitRetest(taskId, pointId, retestVal, [], retestInspector);
+    submitRetest(taskId, pointId, retestVal, currentRetestPhotos, retestInspector);
     Taro.showToast({ title: '复测数据已提交', icon: 'success' });
   };
 
@@ -158,6 +218,7 @@ const VerifyDetailPage: React.FC = () => {
           const isDeviation = checkDeviation(point.id, measuredValues[point.id] || '');
           const hasMeasured = !!measuredValues[point.id];
           const isRetestNeeded = isRectifying && point.isDeviation && !point.retestValue;
+          const currentRetestPhotos = retestPhotos[point.id] || [];
 
           return (
             <View key={point.id} className={styles.pointCard}>
@@ -199,19 +260,25 @@ const VerifyDetailPage: React.FC = () => {
               <View className={styles.photoSection}>
                 <Text className={styles.photoLabel}>现场照片</Text>
                 <View className={styles.photoRow}>
-                  {(point.photos.length > 0 ? point.photos : []).map((_, idx) => (
+                  {(point.photos || []).map((photo, idx) => (
                     <View key={idx} className={styles.photoItem}>
-                      <Text style={{ fontSize: '24rpx', color: '#94A3B8' }}>📷</Text>
+                      <Image
+                        className={styles.photoImg}
+                        src={photo}
+                        mode="aspectFill"
+                        onClick={() => handlePreviewImage(point.photos || [], photo)}
+                      />
+                      <View
+                        className={styles.photoRemoveBtn}
+                        onClick={(e) => { e.stopPropagation(); handleRemoveImage(point.id, idx, false); }}
+                      >
+                        <Text className={styles.photoRemoveText}>×</Text>
+                      </View>
                     </View>
                   ))}
                   <View
                     className={styles.photoAddBtn}
-                    onClick={() => {
-                      const currentPhotos = [...(point.photos || [])];
-                      currentPhotos.push(`photo_${Date.now()}`);
-                      updatePoint(taskId, point.id, { photos: currentPhotos });
-                      Taro.showToast({ title: '已添加照片', icon: 'success' });
-                    }}
+                    onClick={() => handleChooseImage(point.id, false)}
                   >
                     <Text className={styles.photoAddText}>+</Text>
                   </View>
@@ -285,6 +352,35 @@ const VerifyDetailPage: React.FC = () => {
                       <Text className={styles.inputUnit}>mm</Text>
                     </View>
                   </View>
+
+                  <View className={styles.photoSection}>
+                    <Text className={styles.photoLabel}>复测照片（整改后）</Text>
+                    <View className={styles.photoRow}>
+                      {currentRetestPhotos.map((photo, idx) => (
+                        <View key={idx} className={styles.photoItem}>
+                          <Image
+                            className={styles.photoImg}
+                            src={photo}
+                            mode="aspectFill"
+                            onClick={() => handlePreviewImage(currentRetestPhotos, photo)}
+                          />
+                          <View
+                            className={styles.photoRemoveBtn}
+                            onClick={(e) => { e.stopPropagation(); handleRemoveImage(point.id, idx, true); }}
+                          >
+                            <Text className={styles.photoRemoveText}>×</Text>
+                          </View>
+                        </View>
+                      ))}
+                      <View
+                        className={styles.photoAddBtn}
+                        onClick={() => handleChooseImage(point.id, true)}
+                      >
+                        <Text className={styles.photoAddText}>+</Text>
+                      </View>
+                    </View>
+                  </View>
+
                   <View className={styles.inputGroup}>
                     <Text className={styles.inputLabel}>复测陪检人员</Text>
                     <Input
@@ -317,6 +413,23 @@ const VerifyDetailPage: React.FC = () => {
                       <Text style={{ fontSize: '32rpx', fontWeight: 600, color: '#10B981' }}>{point.retestValue}mm</Text>
                     </View>
                   </View>
+                  {point.retestPhotos && point.retestPhotos.length > 0 && (
+                    <View className={styles.photoSection} style={{ marginTop: '24rpx' }}>
+                      <Text className={styles.photoLabel}>复测照片</Text>
+                      <View className={styles.photoRow}>
+                        {point.retestPhotos.map((photo, idx) => (
+                          <View key={idx} className={styles.photoItem}>
+                            <Image
+                              className={styles.photoImg}
+                              src={photo}
+                              mode="aspectFill"
+                              onClick={() => handlePreviewImage(point.retestPhotos || [], photo)}
+                            />
+                          </View>
+                        ))}
+                      </View>
+                    </View>
+                  )}
                 </View>
               )}
             </View>
