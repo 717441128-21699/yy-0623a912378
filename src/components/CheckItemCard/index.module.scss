@@ -1,0 +1,65 @@
+@use '@/styles/variables.scss' as *;
+
+.card {
+  display: flex;
+  align-items: center;
+  padding: $spacing-lg;
+  background-color: $color-bg-card;
+  border-radius: $radius-md;
+  border: 2rpx solid $color-border;
+  margin-bottom: $spacing-sm;
+  transition: all $transition-base;
+
+  &:active {
+    opacity: 0.9;
+    transform: scale(0.98);
+  }
+}
+
+.cardChecked {
+  border-color: $color-primary;
+  background-color: rgba($color-primary, 0.04);
+}
+
+.checkbox {
+  width: 40rpx;
+  height: 40rpx;
+  border-radius: $radius-sm;
+  border: 2rpx solid $color-border;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: $spacing-lg;
+  flex-shrink: 0;
+  transition: all $transition-base;
+}
+
+.checkboxChecked {
+  background-color: $color-primary;
+  border-color: $color-primary;
+}
+
+.checkmark {
+  color: $color-text-white;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-bold;
+}
+
+.info {
+  flex: 1;
+  min-width: 0;
+}
+
+.name {
+  display: block;
+  font-size: $font-size-md;
+  font-weight: $font-weight-medium;
+  color: $color-text-primary;
+  margin-bottom: $spacing-xs;
+}
+
+.standard {
+  display: block;
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+}

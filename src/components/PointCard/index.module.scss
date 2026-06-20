@@ -1,0 +1,171 @@
+@use '@/styles/variables.scss' as *;
+
+.card {
+  background-color: $color-bg-card;
+  border-radius: $radius-md;
+  padding: $spacing-lg;
+  box-shadow: $shadow-card;
+  margin-bottom: $spacing-md;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  margin-bottom: $spacing-md;
+}
+
+.indexBadge {
+  width: 48rpx;
+  height: 48rpx;
+  border-radius: $radius-round;
+  background-color: $color-primary;
+  @include flex-center;
+  margin-right: $spacing-md;
+  flex-shrink: 0;
+}
+
+.indexText {
+  color: $color-text-white;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+}
+
+.headerInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.itemName {
+  display: block;
+  font-size: $font-size-md;
+  font-weight: $font-weight-medium;
+  color: $color-text-primary;
+}
+
+.location {
+  display: block;
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+  margin-top: $spacing-xs;
+}
+
+.statusDot {
+  width: 16rpx;
+  height: 16rpx;
+  border-radius: $radius-round;
+  flex-shrink: 0;
+}
+
+.statusPass {
+  background-color: $color-qualified;
+}
+
+.statusFail {
+  background-color: $color-unqualified;
+}
+
+.dataRow {
+  display: flex;
+  gap: $spacing-lg;
+  padding: $spacing-md;
+  background-color: $color-bg-page;
+  border-radius: $radius-sm;
+  margin-bottom: $spacing-md;
+}
+
+.dataItem {
+  flex: 1;
+  text-align: center;
+}
+
+.dataLabel {
+  display: block;
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  margin-bottom: $spacing-xs;
+}
+
+.dataValue {
+  display: block;
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+.dataValueFail {
+  color: $color-unqualified;
+}
+
+.dataValueRetest {
+  display: block;
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-qualified;
+}
+
+.inspectorRow {
+  display: flex;
+  align-items: center;
+  margin-bottom: $spacing-sm;
+}
+
+.inspectorLabel {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+}
+
+.inspectorValue {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  font-weight: $font-weight-medium;
+}
+
+.rectificationBox {
+  background-color: rgba($color-unqualified, 0.06);
+  border-left: 4rpx solid $color-unqualified;
+  padding: $spacing-md;
+  border-radius: $radius-xs;
+  margin-top: $spacing-sm;
+}
+
+.rectificationTitle {
+  display: block;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  color: $color-unqualified;
+  margin-bottom: $spacing-xs;
+}
+
+.rectificationText {
+  display: block;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  line-height: $line-height-normal;
+}
+
+.rectificationDeadline {
+  display: block;
+  font-size: $font-size-xs;
+  color: $color-pending;
+  margin-top: $spacing-xs;
+}
+
+.photoRow {
+  display: flex;
+  gap: $spacing-sm;
+  margin-top: $spacing-md;
+  flex-wrap: wrap;
+}
+
+.photoItem {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: $radius-sm;
+  background-color: $color-bg-page;
+  @include flex-center;
+}
+
+.photoPlaceholder {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}

@@ -1,0 +1,40 @@
+@use '@/styles/variables.scss' as *;
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4rpx 16rpx;
+  border-radius: $radius-sm;
+  white-space: nowrap;
+}
+
+.tagText {
+  font-size: $font-size-xs;
+  font-weight: $font-weight-medium;
+}
+
+.planned {
+  background-color: rgba($color-warning, 0.12);
+  .tagText { color: $color-warning; }
+}
+
+.inspecting {
+  background-color: rgba($color-info, 0.12);
+  .tagText { color: $color-info; }
+}
+
+.rectifying {
+  background-color: rgba($color-rectifying, 0.12);
+  .tagText { color: $color-rectifying; }
+}
+
+.pendingSign {
+  background-color: rgba($color-pending, 0.12);
+  .tagText { color: $color-pending; }
+}
+
+.signed {
+  background-color: rgba($color-qualified, 0.12);
+  .tagText { color: $color-qualified; }
+}

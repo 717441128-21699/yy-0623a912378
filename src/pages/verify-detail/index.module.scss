@@ -1,0 +1,310 @@
+@use '@/styles/variables.scss' as *;
+
+.container {
+  min-height: 100vh;
+  background-color: $color-bg-page;
+  padding-bottom: 200rpx;
+}
+
+.taskInfo {
+  background: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);
+  padding: $spacing-lg $page-padding $spacing-xl;
+}
+
+.taskSection {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-white;
+  margin-bottom: $spacing-sm;
+}
+
+.taskDate {
+  font-size: $font-size-sm;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.body {
+  padding: $spacing-lg $page-padding;
+}
+
+.pointCard {
+  background-color: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  box-shadow: $shadow-card;
+  margin-bottom: $spacing-md;
+}
+
+.pointHeader {
+  display: flex;
+  align-items: center;
+  margin-bottom: $spacing-md;
+}
+
+.pointIndex {
+  width: 48rpx;
+  height: 48rpx;
+  border-radius: $radius-round;
+  background-color: $color-primary;
+  @include flex-center;
+  margin-right: $spacing-md;
+  flex-shrink: 0;
+}
+
+.pointIndexText {
+  color: $color-text-white;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+}
+
+.pointInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.pointItemName {
+  display: block;
+  font-size: $font-size-md;
+  font-weight: $font-weight-medium;
+  color: $color-text-primary;
+}
+
+.pointLocation {
+  display: block;
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+  margin-top: $spacing-xs;
+}
+
+.pointStatus {
+  flex-shrink: 0;
+}
+
+.passDot {
+  width: 16rpx;
+  height: 16rpx;
+  border-radius: $radius-round;
+  background-color: $color-qualified;
+}
+
+.failDot {
+  width: 16rpx;
+  height: 16rpx;
+  border-radius: $radius-round;
+  background-color: $color-unqualified;
+}
+
+.inputGroup {
+  margin-bottom: $spacing-md;
+}
+
+.inputLabel {
+  display: block;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  margin-bottom: $spacing-sm;
+  font-weight: $font-weight-medium;
+}
+
+.inputRow {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+}
+
+.measuredInput {
+  flex: 1;
+  height: 72rpx;
+  background-color: $color-bg-page;
+  border-radius: $radius-sm;
+  border: 2rpx solid $color-border;
+  padding: 0 $spacing-md;
+  font-size: $font-size-md;
+  color: $color-text-primary;
+}
+
+.inputUnit {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+  flex-shrink: 0;
+}
+
+.standardHint {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  margin-top: $spacing-xs;
+}
+
+.photoSection {
+  margin-bottom: $spacing-md;
+}
+
+.photoLabel {
+  display: block;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  margin-bottom: $spacing-sm;
+  font-weight: $font-weight-medium;
+}
+
+.photoRow {
+  display: flex;
+  gap: $spacing-sm;
+  flex-wrap: wrap;
+}
+
+.photoItem {
+  width: 140rpx;
+  height: 140rpx;
+  border-radius: $radius-sm;
+  overflow: hidden;
+  position: relative;
+}
+
+.photoImg {
+  width: 100%;
+  height: 100%;
+}
+
+.photoAddBtn {
+  width: 140rpx;
+  height: 140rpx;
+  border-radius: $radius-sm;
+  border: 2rpx dashed $color-border;
+  @include flex-center;
+  background-color: $color-bg-page;
+  transition: all $transition-base;
+
+  &:active {
+    opacity: 0.8;
+  }
+}
+
+.photoAddText {
+  font-size: 48rpx;
+  color: $color-text-disabled;
+}
+
+.photoRemoveBtn {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 36rpx;
+  height: 36rpx;
+  background-color: rgba(0, 0, 0, 0.5);
+  border-radius: $radius-round;
+  @include flex-center;
+}
+
+.photoRemoveText {
+  color: $color-text-white;
+  font-size: $font-size-xs;
+}
+
+.inspectorInput {
+  width: 100%;
+  height: 72rpx;
+  background-color: $color-bg-page;
+  border-radius: $radius-sm;
+  border: 2rpx solid $color-border;
+  padding: 0 $spacing-md;
+  font-size: $font-size-md;
+  color: $color-text-primary;
+}
+
+.deviationBox {
+  background-color: rgba($color-unqualified, 0.06);
+  border-left: 4rpx solid $color-unqualified;
+  border-radius: $radius-xs;
+  padding: $spacing-md;
+  margin-top: $spacing-md;
+}
+
+.deviationTitle {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  color: $color-unqualified;
+  margin-bottom: $spacing-sm;
+}
+
+.deviationInput {
+  width: 100%;
+  min-height: 80rpx;
+  background-color: $color-bg-card;
+  border-radius: $radius-sm;
+  border: 2rpx solid rgba($color-unqualified, 0.2);
+  padding: $spacing-md;
+  font-size: $font-size-sm;
+  color: $color-text-primary;
+  margin-bottom: $spacing-md;
+}
+
+.deadlineRow {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+}
+
+.deadlineLabel {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  flex-shrink: 0;
+}
+
+.deadlineInput {
+  flex: 1;
+  height: 64rpx;
+  background-color: $color-bg-card;
+  border-radius: $radius-sm;
+  border: 2rpx solid rgba($color-unqualified, 0.2);
+  padding: 0 $spacing-md;
+  font-size: $font-size-sm;
+  color: $color-text-primary;
+}
+
+.retestSection {
+  margin-top: $spacing-lg;
+  padding-top: $spacing-lg;
+  border-top: 2rpx dashed $color-divider;
+}
+
+.retestTitle {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-rectifying;
+  margin-bottom: $spacing-md;
+}
+
+.bottomBar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: $spacing-lg $page-padding;
+  padding-bottom: calc(#{$spacing-lg} + env(safe-area-inset-bottom));
+  background-color: $color-bg-card;
+  box-shadow: 0 -2rpx 12rpx rgba(0, 0, 0, 0.06);
+  z-index: 100;
+}
+
+.submitButton {
+  width: 100%;
+  height: $button-height-lg;
+  background: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);
+  color: $color-text-white;
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  border-radius: $radius-button;
+  @include button-reset;
+  transition: all $transition-base;
+
+  &:active {
+    opacity: 0.9;
+    transform: scale(0.98);
+  }
+}
+
+.submitButtonDisabled {
+  background: $color-text-disabled;
+  opacity: 0.6;
+}

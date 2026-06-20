@@ -1,0 +1,338 @@
+@use '@/styles/variables.scss' as *;
+
+.container {
+  min-height: 100vh;
+  background-color: $color-bg-page;
+  padding-bottom: 200rpx;
+}
+
+.taskInfo {
+  background: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);
+  padding: $spacing-lg $page-padding $spacing-xl;
+}
+
+.taskSection {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-white;
+  margin-bottom: $spacing-sm;
+}
+
+.taskDate {
+  font-size: $font-size-sm;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.body {
+  padding: $spacing-lg $page-padding;
+}
+
+.sectionTitle {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  margin-bottom: $spacing-md;
+  padding-left: $spacing-sm;
+  border-left: 6rpx solid $color-primary;
+}
+
+.compareCard {
+  background-color: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  box-shadow: $shadow-card;
+  margin-bottom: $spacing-md;
+}
+
+.compareHeader {
+  display: flex;
+  align-items: center;
+  margin-bottom: $spacing-md;
+}
+
+.compareIndex {
+  width: 48rpx;
+  height: 48rpx;
+  border-radius: $radius-round;
+  background-color: $color-primary;
+  @include flex-center;
+  margin-right: $spacing-md;
+  flex-shrink: 0;
+}
+
+.compareIndexText {
+  color: $color-text-white;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+}
+
+.compareInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.compareItemName {
+  display: block;
+  font-size: $font-size-md;
+  font-weight: $font-weight-medium;
+  color: $color-text-primary;
+}
+
+.compareLocation {
+  display: block;
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+  margin-top: $spacing-xs;
+}
+
+.compareStatus {
+  flex-shrink: 0;
+}
+
+.statusPass {
+  padding: 4rpx 16rpx;
+  border-radius: $radius-sm;
+  background-color: rgba($color-qualified, 0.12);
+  font-size: $font-size-xs;
+  color: $color-qualified;
+  font-weight: $font-weight-medium;
+}
+
+.statusFail {
+  padding: 4rpx 16rpx;
+  border-radius: $radius-sm;
+  background-color: rgba($color-unqualified, 0.12);
+  font-size: $font-size-xs;
+  color: $color-unqualified;
+  font-weight: $font-weight-medium;
+}
+
+.dataCompareRow {
+  display: flex;
+  gap: $spacing-md;
+  padding: $spacing-md;
+  background-color: $color-bg-page;
+  border-radius: $radius-sm;
+  margin-bottom: $spacing-md;
+}
+
+.dataCompareItem {
+  flex: 1;
+  text-align: center;
+}
+
+.dataCompareLabel {
+  display: block;
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  margin-bottom: $spacing-xs;
+}
+
+.dataCompareValue {
+  display: block;
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+}
+
+.valueOriginal {
+  color: $color-unqualified;
+}
+
+.valueRetest {
+  color: $color-qualified;
+}
+
+.valueStandard {
+  color: $color-text-secondary;
+}
+
+.photoCompare {
+  display: flex;
+  gap: $spacing-md;
+  margin-bottom: $spacing-md;
+}
+
+.photoCompareItem {
+  flex: 1;
+}
+
+.photoCompareLabel {
+  display: block;
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  margin-bottom: $spacing-xs;
+  text-align: center;
+}
+
+.photoCompareBox {
+  height: 200rpx;
+  background-color: $color-bg-page;
+  border-radius: $radius-sm;
+  @include flex-center;
+  border: 2rpx solid $color-border;
+}
+
+.photoCompareText {
+  font-size: $font-size-sm;
+  color: $color-text-disabled;
+}
+
+.inspectorInfo {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  margin-bottom: $spacing-sm;
+}
+
+.inspectorLabel {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+}
+
+.inspectorValue {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  font-weight: $font-weight-medium;
+}
+
+.rectificationBox {
+  background-color: rgba($color-unqualified, 0.06);
+  border-left: 4rpx solid $color-unqualified;
+  border-radius: $radius-xs;
+  padding: $spacing-md;
+  margin-top: $spacing-sm;
+}
+
+.rectificationTitle {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  color: $color-unqualified;
+  margin-bottom: $spacing-xs;
+}
+
+.rectificationText {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  line-height: $line-height-normal;
+}
+
+.rectificationDeadline {
+  font-size: $font-size-xs;
+  color: $color-pending;
+  display: block;
+  margin-top: $spacing-xs;
+}
+
+.signSection {
+  background-color: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  box-shadow: $shadow-card;
+  margin-top: $spacing-lg;
+}
+
+.signTitle {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  margin-bottom: $spacing-lg;
+  padding-left: $spacing-sm;
+  border-left: 6rpx solid $color-primary;
+}
+
+.signButtons {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+}
+
+.signBtn {
+  @include button-reset;
+  width: 100%;
+  height: $button-height-md;
+  border-radius: $radius-button;
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  transition: all $transition-base;
+
+  &:active {
+    opacity: 0.9;
+    transform: scale(0.98);
+  }
+}
+
+.signApprove {
+  background: linear-gradient(135deg, $color-qualified 0%, #34D399 100%);
+  color: $color-text-white;
+}
+
+.signReject {
+  background-color: $color-bg-card;
+  color: $color-unqualified;
+  border: 2rpx solid $color-unqualified;
+}
+
+.signObserve {
+  background-color: $color-bg-card;
+  color: $color-observing;
+  border: 2rpx solid $color-observing;
+}
+
+.signCommentInput {
+  width: 100%;
+  min-height: 120rpx;
+  background-color: $color-bg-page;
+  border-radius: $radius-sm;
+  border: 2rpx solid $color-border;
+  padding: $spacing-md;
+  font-size: $font-size-sm;
+  color: $color-text-primary;
+  margin-bottom: $spacing-lg;
+}
+
+.signedResult {
+  text-align: center;
+  padding: $spacing-xl;
+}
+
+.signedIcon {
+  font-size: 80rpx;
+  margin-bottom: $spacing-lg;
+}
+
+.signedText {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  display: block;
+  margin-bottom: $spacing-sm;
+}
+
+.signedTextApproved {
+  color: $color-qualified;
+}
+
+.signedTextRejected {
+  color: $color-unqualified;
+}
+
+.signedTextObserving {
+  color: $color-observing;
+}
+
+.signedDate {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+  display: block;
+}
+
+.bottomBar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: $spacing-lg $page-padding;
+  padding-bottom: calc(#{$spacing-lg} + env(safe-area-inset-bottom));
+  background-color: $color-bg-card;
+  box-shadow: 0 -2rpx 12rpx rgba(0, 0, 0, 0.06);
+  z-index: 100;
+}
