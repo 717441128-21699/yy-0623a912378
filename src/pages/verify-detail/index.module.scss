@@ -308,3 +308,71 @@
   background: $color-text-disabled;
   opacity: 0.6;
 }
+
+.saveRectifyBtn {
+  height: 64rpx;
+  font-size: 24rpx;
+  margin-top: 16rpx;
+  width: 100%;
+  background: linear-gradient(135deg, $color-unqualified 0%, darken($color-unqualified, 5%) 100%);
+  color: $color-text-white;
+  border-radius: $radius-button;
+  font-weight: $font-weight-medium;
+  @include button-reset;
+}
+
+.submitRetestBtn {
+  height: 72rpx;
+  font-size: 26rpx;
+  width: 100%;
+  background: linear-gradient(135deg, $color-rectifying 0%, darken($color-rectifying, 8%) 100%);
+  color: $color-text-white;
+  border-radius: $radius-button;
+  font-weight: $font-weight-medium;
+  @include button-reset;
+  margin-top: $spacing-md;
+}
+
+.measureCompareRow {
+  display: flex;
+  gap: 24rpx;
+}
+
+.measureCompareCol {
+  flex: 1;
+  text-align: center;
+}
+
+.measureCompareLabel {
+  font-size: 22rpx;
+  color: $color-text-tertiary;
+  display: block;
+}
+
+.measureCompareOriginal {
+  font-size: 32rpx;
+  font-weight: $font-weight-bold;
+  color: $color-unqualified;
+}
+
+.measureCompareRetest {
+  font-size: 32rpx;
+  font-weight: $font-weight-bold;
+  color: $color-qualified;
+}
+
+.retestPhotosSection {
+  margin-top: 24rpx;
+}
+
+.opinionText {
+  font-size: 24rpx;
+  color: $color-text-secondary;
+}
+
+.deadlineText {
+  font-size: 22rpx;
+  color: $color-pending;
+  margin-top: 8rpx;
+  display: block;
+}

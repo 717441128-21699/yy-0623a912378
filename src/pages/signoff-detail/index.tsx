@@ -1,9 +1,45 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { View, Text, Input, Button, Image, ScrollView } from '@tarojs/components';
 import Taro, { useRouter } from '@tarojs/taro';
 import classnames from 'classnames';
 import { useInspectionStore } from '@/store/inspection';
 import styles from './index.module.scss';
+
+const buildReportText = (task: any, full: boolean) => {
+  const lines: string[] = [];
+  lines.push('==== 质量实测实量闭环记录报告 ====');
+  lines.push(`标段：${task.sectionName}`);
+  lines.push(`抽检日期：${task.date}`);
+  lines.push(`抽检点数：${task.points.length}个`);
+  const deviations = task.points.filter((p: any) => p.isDeviation);
+  lines.push(`偏差点数：${deviations.length}个`);
+  lines.push('-------------------------------');
+  task.points.forEach((p: any, idx: number) => {
+    lines.push(`【点位${idx + 1}】${p.checkItemName}（${p.location}）`);
+    lines.push(`  标准值：≤${p.standardValue}mm | 实测值：${p.measuredValue}mm | ${p.isDeviation ? '⚠️偏差' : '✅合格'}`);
+    if (p.isDeviation && p.retestValue) {
+      lines.push(`  复测值：${p.retestValue}mm（复测：${p.retestDate || '已提交'}）`);
+    }
+    if (full) {
+      if (p.isDeviation && p.rectificationOpinion) {
+        lines.push(`  整改意见：${p.rectificationOpinion}`);
+        if (p.rectificationDeadline) lines.push(`  整改期限：${p.rectificationDeadline}`);
+      }
+      if (p.photos && p.photos.length > 0) lines.push(`  原始照片：${p.photos.length}张`);
+      if (p.isDeviation && p.retestPhotos && p.retestPhotos.length > 0) lines.push(`  复测照片：${p.retestPhotos.length}张`);
+    }
+    lines.push('');
+  });
+  if (task.status === 'signed') {
+    lines.push('-------------------------------');
+    lines.push(`签认结果：${task.signResult === 'approved' ? '✅ 通过' : task.signResult === 'rejected' ? '❌ 退回' : '👁️ 继续观察'}`);
+    if (task.signDate) lines.push(`签认日期：${task.signDate}`);
+    if (task.supervisorName) lines.push(`监理：${task.supervisorName}`);
+    if (task.signComment) lines.push(`签认意见：${task.signComment}`);
+    lines.push('================================');
+  }
+  return lines.join('\n');
+};
 
 const SignoffDetailPage: React.FC = () => {
   const router = useRouter();
@@ -13,9 +49,38 @@ const SignoffDetailPage: React.FC = () => {
 
   const [comment, setComment] = useState('');
 
+  const reportSummary = useMemo(() => {
+    if (!task) return null;
+    const total = task.points.length;
+    const passed = task.points.filter(p => !p.isDeviation).length;
+    const deviated = task.points.filter(p => p.isDeviation).length;
+    const retested = task.points.filter(p => p.isDeviation && p.retestValue).length;
+    const originalPhotos = task.points.reduce((sum, p) => sum + (p.photos?.length || 0), 0);
+    const retestPhotos = task.points.reduce((sum, p) => sum + ((p.retestPhotos?.length || 0)), 0);
+    return { total, passed, deviated, retested, originalPhotos, retestPhotos };
+  }, [task]);
+
   const handlePreviewImage = (urls: string[], current: string) => {
     if (!urls || urls.length === 0) return;
     Taro.previewImage({ urls, current });
+  };
+
+  const handleCopyReport = () => {
+    if (!task) return;
+    const txt = buildReportText(task, true);
+    Taro.setClipboardData({
+      data: txt,
+      success: () => Taro.showToast({ title: '完整报告已复制', icon: 'success' }),
+    });
+  };
+
+  const handleExportReport = () => {
+    if (!task) return;
+    const txt = buildReportText(task, false);
+    Taro.setClipboardData({
+      data: txt,
+      success: () => Taro.showToast({ title: '留档文本已复制', icon: 'success' }),
+    });
   };
 
   const handleSign = (result: 'approved' | 'rejected' | 'observing') => {
@@ -109,6 +174,137 @@ const SignoffDetailPage: React.FC = () => {
       </View>
 
       <View className={styles.body}>
+        {isSigned && reportSummary && (
+          <View className={styles.reportSection}>
+            <View className={styles.reportHeader}>
+              <Text className={styles.reportTitle}>📄 闭环记录报告</Text>
+              {task.signDate && (
+                <Text className={styles.reportMeta}>签认于 {task.signDate}</Text>
+              )}
+            </View>
+
+            <View className={styles.reportSummaryRow}>
+              <View className={styles.reportSummaryItem}>
+                <Text className={styles.reportSummaryNum}>{reportSummary.total}</Text>
+                <Text className={styles.reportSummaryLabel}>总点位</Text>
+              </View>
+              <View className={styles.reportSummaryItem}>
+                <Text className={classnames(styles.reportSummaryNum, styles.reportSummaryNumPass)}>{reportSummary.passed}</Text>
+                <Text className={styles.reportSummaryLabel}>合格</Text>
+              </View>
+              <View className={styles.reportSummaryItem}>
+                <Text className={classnames(styles.reportSummaryNum, styles.reportSummaryNumFail)}>{reportSummary.deviated}</Text>
+                <Text className={styles.reportSummaryLabel}>偏差</Text>
+              </View>
+              <View className={styles.reportSummaryItem}>
+                <Text className={classnames(styles.reportSummaryNum, styles.reportSummaryNumRectify)}>{reportSummary.retested}</Text>
+                <Text className={styles.reportSummaryLabel}>已复测</Text>
+              </View>
+            </View>
+
+            <View className={styles.reportContent}>
+              {task.points.map((point, index) => (
+                <View key={point.id} className={styles.reportItem}>
+                  <View className={styles.reportItemHead}>
+                    <View style={{ display: 'flex', alignItems: 'center', minWidth: 0, flex: 1 }}>
+                      <Text className={styles.reportItemIndex}>{index + 1}</Text>
+                      <View style={{ flex: 1, minWidth: 0 }}>
+                        <Text className={styles.reportItemName}>{point.checkItemName}</Text>
+                        <Text className={styles.reportItemLocation}>{point.location}</Text>
+                      </View>
+                    </View>
+                    <Text className={classnames(
+                      styles.reportItemTag,
+                      point.isDeviation ? styles.reportItemTagFail : styles.reportItemTagPass,
+                    )}>
+                      {point.isDeviation ? '偏差' : '合格'}
+                    </Text>
+                  </View>
+
+                  <View className={styles.reportItemDataRow}>
+                    <View className={styles.reportItemData}>
+                      <Text className={styles.reportItemDataLabel}>标准值</Text>
+                      <Text className={styles.reportItemDataValue}>≤{point.standardValue}</Text>
+                    </View>
+                    <View className={styles.reportItemData}>
+                      <Text className={styles.reportItemDataLabel}>实测值</Text>
+                      <Text className={classnames(
+                        styles.reportItemDataValue,
+                        point.isDeviation && styles.reportItemDataValueOriginal,
+                      )}>{point.measuredValue}</Text>
+                    </View>
+                    {point.isDeviation && point.retestValue && (
+                      <View className={styles.reportItemData}>
+                        <Text className={styles.reportItemDataLabel}>复测值</Text>
+                        <Text className={classnames(styles.reportItemDataValue, styles.reportItemDataValueRetest)}>
+                          {point.retestValue}
+                        </Text>
+                      </View>
+                    )}
+                  </View>
+
+                  <View className={styles.reportItemPhotos}>
+                    <View className={styles.reportItemPhotoTag}>
+                      <Text className={styles.reportItemPhotoTagLabel}>原始照片</Text>
+                      <Text className={styles.reportItemPhotoTagValue}>{point.photos?.length || 0}张</Text>
+                    </View>
+                    {point.isDeviation && (
+                      <View className={styles.reportItemPhotoTag}>
+                        <Text className={styles.reportItemPhotoTagLabel}>复测照片</Text>
+                        <Text className={styles.reportItemPhotoTagValue}>{point.retestPhotos?.length || 0}张</Text>
+                      </View>
+                    )}
+                  </View>
+
+                  {point.isDeviation && point.rectificationOpinion && (
+                    <View className={styles.reportItemOpinion}>
+                      <Text className={styles.reportItemOpinionLabel}>整改意见：</Text>
+                      <Text className={styles.reportItemOpinionText}>{point.rectificationOpinion}</Text>
+                    </View>
+                  )}
+                </View>
+              ))}
+            </View>
+
+            <View className={styles.reportFooter}>
+              <View className={styles.reportSignRow}>
+                <Text className={styles.reportSignLabel}>抽检日期</Text>
+                <Text className={styles.reportSignValue}>{task.date}</Text>
+              </View>
+              <View className={styles.reportSignRow}>
+                <Text className={styles.reportSignLabel}>监理</Text>
+                <Text className={styles.reportSignValue}>{task.supervisorName || '未记录'}</Text>
+              </View>
+              <View className={styles.reportSignRow}>
+                <Text className={styles.reportSignLabel}>签认结果</Text>
+                <Text className={classnames(
+                  styles.reportSignValue,
+                  task.signResult === 'approved' && styles.reportSignValueApproved,
+                  task.signResult === 'rejected' && styles.reportSignValueRejected,
+                  task.signResult === 'observing' && styles.reportSignValueObserving,
+                )}>
+                  {task.signResult === 'approved' ? '✅ 通过（闭环）' : task.signResult === 'rejected' ? '❌ 退回（重新整改）' : '👁️ 继续观察'}
+                </Text>
+              </View>
+              {task.signComment && (
+                <View className={styles.reportComment}>
+                  <Text className={styles.reportCommentLabel}>签认意见</Text>
+                  <Text className={styles.reportCommentText}>{task.signComment}</Text>
+                </View>
+              )}
+            </View>
+
+            <View className={styles.reportActions}>
+              <Button className={classnames(styles.reportActionBtn, styles.reportActionCopy)} onClick={handleCopyReport}>
+                📋 复制完整报告
+              </Button>
+              <Button className={classnames(styles.reportActionBtn, styles.reportActionExport)} onClick={handleExportReport}>
+                📝 复制留档文本
+              </Button>
+            </View>
+          </View>
+        )}
+
         <Text className={styles.sectionTitle}>数据对比</Text>
 
         {task.points.map((point, index) => (

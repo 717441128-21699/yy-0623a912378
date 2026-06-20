@@ -5,6 +5,54 @@ import classnames from 'classnames';
 import { useInspectionStore } from '@/store/inspection';
 import styles from './index.module.scss';
 
+const formatDate = (d: Date): string => {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+};
+
+const buildDefaultRectification = (
+  checkItemName: string,
+  measuredValue: string,
+  standardValue: string,
+  location: string,
+) => {
+  const numMeasured = parseFloat(measuredValue);
+  const numStandard = parseFloat(standardValue);
+  const diff = isNaN(numMeasured) || isNaN(numStandard) ? 0 : Math.max(0, numMeasured - numStandard);
+  const pct = numStandard > 0 ? (diff / numStandard) * 100 : 0;
+
+  let daysToAdd = 3;
+  let severity = '一般偏差';
+  let measureText = '局部返工处理';
+
+  if (pct >= 100 || diff >= 20) {
+    daysToAdd = 7;
+    severity = '严重偏差';
+    measureText = '必须拆除重做，按专项整改方案施工';
+  } else if (pct >= 50 || diff >= 10) {
+    daysToAdd = 5;
+    severity = '较大偏差';
+    measureText = '局部返工修补，处理完成后重新复测';
+  } else if (pct >= 20 || diff >= 5) {
+    daysToAdd = 4;
+    severity = '明显偏差';
+    measureText = '修整打磨或局部修补，重新验收';
+  }
+
+  const deadlineDate = new Date();
+  deadlineDate.setDate(deadlineDate.getDate() + daysToAdd);
+
+  const opinion = `【${severity}】${checkItemName}（${location}）实测${numMeasured}mm，允许偏差≤${numStandard}mm，超差${diff.toFixed(1)}mm（超${pct.toFixed(0)}%）。整改要求：${measureText}，整改完成后报监理复测。`;
+
+  return {
+    opinion,
+    deadline: formatDate(deadlineDate),
+    severity,
+  };
+};
+
 const VerifyDetailPage: React.FC = () => {
   const router = useRouter();
   const taskId = router.params.taskId || '';
@@ -66,10 +114,33 @@ const VerifyDetailPage: React.FC = () => {
   const handleMeasuredChange = (pointId: string, value: string) => {
     setMeasuredValues(prev => ({ ...prev, [pointId]: value }));
     const isDeviation = checkDeviation(pointId, value);
-    updatePoint(taskId, pointId, {
+    const point = task?.points.find(p => p.id === pointId);
+
+    const updates: Record<string, any> = {
       measuredValue: value,
       isDeviation,
-    });
+    };
+
+    if (isDeviation && point && value) {
+      const existingOpinion = opinions[pointId];
+      const existingDeadline = deadlines[pointId];
+      if (!existingOpinion || !existingDeadline) {
+        const { opinion, deadline } = buildDefaultRectification(
+          point.checkItemName,
+          value,
+          point.standardValue,
+          point.location,
+        );
+        if (!existingOpinion) {
+          setOpinions(prev => ({ ...prev, [pointId]: opinion }));
+        }
+        if (!existingDeadline) {
+          setDeadlines(prev => ({ ...prev, [pointId]: deadline }));
+        }
+      }
+    }
+
+    updatePoint(taskId, pointId, updates);
   };
 
   const handleInspectorChange = (pointId: string, value: string) => {
@@ -297,7 +368,7 @@ const VerifyDetailPage: React.FC = () => {
 
               {hasMeasured && isDeviation && !isRectifying && (
                 <View className={styles.deviationBox}>
-                  <Text className={styles.deviationTitle}>⚠️ 发现偏差 - 生成整改意见</Text>
+                  <Text className={styles.deviationTitle}>⚠️ 发现偏差 - 自动生成整改意见（可修改）</Text>
                   <Input
                     className={styles.deviationInput}
                     placeholder="输入整改意见"
@@ -315,8 +386,7 @@ const VerifyDetailPage: React.FC = () => {
                     />
                   </View>
                   <Button
-                    className={styles.submitButton}
-                    style={{ height: '64rpx', fontSize: '24rpx', marginTop: '16rpx' }}
+                    className={styles.saveRectifyBtn}
                     onClick={() => handleSaveRectification(point.id)}
                   >
                     保存整改意见
@@ -327,9 +397,9 @@ const VerifyDetailPage: React.FC = () => {
               {point.rectificationOpinion && (
                 <View className={styles.deviationBox}>
                   <Text className={styles.deviationTitle}>整改意见</Text>
-                  <Text style={{ fontSize: '24rpx', color: '#475569' }}>{point.rectificationOpinion}</Text>
+                  <Text className={styles.opinionText}>{point.rectificationOpinion}</Text>
                   {point.rectificationDeadline && (
-                    <Text style={{ fontSize: '22rpx', color: '#F59E0B', marginTop: '8rpx', display: 'block' }}>
+                    <Text className={styles.deadlineText}>
                       整改期限：{point.rectificationDeadline}
                     </Text>
                   )}
@@ -391,8 +461,7 @@ const VerifyDetailPage: React.FC = () => {
                     />
                   </View>
                   <Button
-                    className={styles.submitButton}
-                    style={{ height: '72rpx', fontSize: '26rpx' }}
+                    className={styles.submitRetestBtn}
                     onClick={() => handleSubmitRetest(point.id)}
                   >
                     提交复测
@@ -403,18 +472,18 @@ const VerifyDetailPage: React.FC = () => {
               {point.retestValue && (
                 <View className={styles.retestSection}>
                   <Text className={styles.retestTitle}>✅ 复测结果</Text>
-                  <View style={{ display: 'flex', gap: '24rpx' }}>
-                    <View style={{ flex: 1, textAlign: 'center' }}>
-                      <Text style={{ fontSize: '22rpx', color: '#94A3B8', display: 'block' }}>实测值</Text>
-                      <Text style={{ fontSize: '32rpx', fontWeight: 600, color: '#EF4444' }}>{point.measuredValue}mm</Text>
+                  <View className={styles.measureCompareRow}>
+                    <View className={styles.measureCompareCol}>
+                      <Text className={styles.measureCompareLabel}>实测值</Text>
+                      <Text className={styles.measureCompareOriginal}>{point.measuredValue}mm</Text>
                     </View>
-                    <View style={{ flex: 1, textAlign: 'center' }}>
-                      <Text style={{ fontSize: '22rpx', color: '#94A3B8', display: 'block' }}>复测值</Text>
-                      <Text style={{ fontSize: '32rpx', fontWeight: 600, color: '#10B981' }}>{point.retestValue}mm</Text>
+                    <View className={styles.measureCompareCol}>
+                      <Text className={styles.measureCompareLabel}>复测值</Text>
+                      <Text className={styles.measureCompareRetest}>{point.retestValue}mm</Text>
                     </View>
                   </View>
                   {point.retestPhotos && point.retestPhotos.length > 0 && (
-                    <View className={styles.photoSection} style={{ marginTop: '24rpx' }}>
+                    <View className={classnames(styles.photoSection, styles.retestPhotosSection)}>
                       <Text className={styles.photoLabel}>复测照片</Text>
                       <View className={styles.photoRow}>
                         {point.retestPhotos.map((photo, idx) => (

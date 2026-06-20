@@ -168,3 +168,201 @@
   background: $color-text-disabled;
   opacity: 0.6;
 }
+
+.historyCard {
+  background-color: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  box-shadow: $shadow-card;
+  margin-bottom: $spacing-lg;
+}
+
+.historyHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $spacing-md;
+  padding-bottom: $spacing-md;
+  border-bottom: 2rpx dashed $color-divider;
+}
+
+.historyTitle {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  display: flex;
+  align-items: center;
+}
+
+.historyIcon {
+  margin-right: $spacing-sm;
+  font-size: $font-size-lg;
+}
+
+.historyToggle {
+  font-size: $font-size-xs;
+  color: $color-primary;
+  font-weight: $font-weight-medium;
+}
+
+.historyPickerRow {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  margin-bottom: $spacing-md;
+}
+
+.historyPicker {
+  flex: 1;
+  height: 72rpx;
+  background-color: $color-bg-page;
+  border-radius: $radius-sm;
+  border: 2rpx solid $color-border;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 $spacing-md;
+}
+
+.historyPickerValue {
+  font-size: $font-size-sm;
+  color: $color-text-primary;
+  font-weight: $font-weight-medium;
+  @include text-ellipsis;
+}
+
+.historyFilterBar {
+  display: flex;
+  gap: $spacing-xs;
+  margin-bottom: $spacing-md;
+  flex-wrap: wrap;
+}
+
+.historyFilterItem {
+  padding: 8rpx 20rpx;
+  border-radius: $radius-round;
+  background-color: $color-bg-page;
+  color: $color-text-secondary;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-medium;
+  border: 2rpx solid transparent;
+  transition: all $transition-base;
+}
+
+.historyFilterItemActive {
+  background-color: rgba($color-primary, 0.1);
+  color: $color-primary;
+  border-color: rgba($color-primary, 0.25);
+}
+
+.historyStatsRow {
+  display: flex;
+  gap: $spacing-sm;
+  margin-bottom: $spacing-md;
+}
+
+.historyStatCard {
+  flex: 1;
+  min-width: 110rpx;
+  padding: $spacing-sm $spacing-xs;
+  background-color: $color-bg-page;
+  border-radius: $radius-sm;
+  text-align: center;
+}
+
+.historyStatNum {
+  display: block;
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+}
+
+.historyStatLabel {
+  display: block;
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  margin-top: 2rpx;
+}
+
+.historyStatNumRectify {
+  color: $color-rectifying;
+}
+
+.historyStatNumPending {
+  color: $color-pending;
+}
+
+.historyStatNumApproved {
+  color: $color-qualified;
+}
+
+.historyStatNumRejected {
+  color: $color-unqualified;
+}
+
+.historyTaskList {
+  max-height: 620rpx;
+  overflow: hidden;
+}
+
+.historyTaskCard {
+  padding: $spacing-md;
+  background-color: $color-bg-page;
+  border-radius: $radius-sm;
+  margin-bottom: $spacing-sm;
+  transition: all $transition-base;
+
+  &:active {
+    transform: scale(0.98);
+    opacity: 0.95;
+  }
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.historyTaskHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $spacing-xs;
+}
+
+.historyTaskDate {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+.historyTaskMeta {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  display: block;
+  margin-bottom: $spacing-xs;
+}
+
+.historyTaskDeviation {
+  font-size: $font-size-xs;
+  color: $color-unqualified;
+  font-weight: $font-weight-medium;
+}
+
+.historyTaskEmpty {
+  padding: 48rpx 0;
+  text-align: center;
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+}
+
+.historyShowAllBtn {
+  margin-top: $spacing-sm;
+  height: 64rpx;
+  background-color: rgba($color-primary, 0.05);
+  color: $color-primary;
+  border-radius: $radius-sm;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-medium;
+  @include button-reset;
+  width: 100%;
+}
